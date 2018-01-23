@@ -281,9 +281,9 @@ def main():
     print('Friends per candidate:')
     print_num_friends(users)
     friend_counts = count_friends(users)
-    print('Most common friends:\n%s' % str(friend_counts.most_common(5)))
-    print('Friend Overlap:\n%s' % str(friend_overlap(users)))
-    print('User followed by Hillary and Donald: %s' % followed_by_hillary_and_donald(users, twitter))
+    print('Most common friends:\n%s' % str(friend_counts.most_com
+    print('User followed by Hillary and Donald: %s' % followed_by_hmon(5)))
+    print('Friend Overlap:\n%s' % str(friend_overlap(users)))illary_and_donald(users, twitter))
 
     graph = create_graph(users, friend_counts)
     print('graph has %s nodes and %s edges' % (len(graph.nodes()), len(graph.edges())))

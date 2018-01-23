@@ -10,10 +10,9 @@ Trump.
 How is this approach misleading? How might you fix it?
 
 
+Friend_overlap function essentially tells you the number of common followers for two people. In this particular instance , Jill stein and Gary Johnson have 238 common followers while Hillary Clinton and Donald Trump have only 1 common follower. But this statistic does not essentially mean that people with more common followers are similar , since Jill Stein and Gary Johnson have entirely different career paths and political alignments. The only obvious commonality between them is that both were presidential candidates for 2016 election.
 
-
-
-
+In my opinion, to understand the similarity between two people, the statistic regarding the number of common pages that they follow might be providing a better information. For Example, if two people are from the field of theortical physics like Michio Kaku and Neil Degrasse Tyson, their similarity would be reflected in the kind of pages and people they might be following. 
 
 
 
