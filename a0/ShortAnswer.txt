@@ -10,9 +10,14 @@ Trump.
 How is this approach misleading? How might you fix it?
 
 
-Friend_overlap function essentially tells you the number of common followers for two people. In this particular instance , Jill stein and Gary Johnson have 238 common followers while Hillary Clinton and Donald Trump have only 1 common follower. But this statistic does not essentially mean that people with more common followers are similar , since Jill Stein and Gary Johnson have entirely different career paths and political alignments. The only obvious commonality between them is that both were presidential candidates for 2016 election.
+Friend_overlap function essentially tells you the number of friends commonly followed by two users. In this instance, Jill Stein and Gary Johnson have many more commonly followed people than Hillary Clinton and Donald Trump. Although this statistic might be thought of as an indicator of the common interests of two people, this approach could be quite misleading because the number of people followed by Jill Stein and Gary Johnson are 1649 and 3488 , whereas Hillary Clinton only follows 770 and Donald Trump at mere 45. Hence, the probability of Jill Stein and Gary Johnson having more common friends are very large compared to Hillary Clinton and Donald trump. 
 
-In my opinion, to understand the similarity between two people, the statistic regarding the number of common pages that they follow might be providing a better information. For Example, if two people are from the field of theortical physics like Michio Kaku and Neil Degrasse Tyson, their similarity would be reflected in the kind of pages and people they might be following. 
+In my opinion , a better fix towards the approach would be to create a ratio of number of ( friend_overlap / total number of friends ) for doing the similarity analysis. 
+
+For example , for Dr Jill Stein and Gary Johnson , the similarity ratio  would be 238 / ( 1649 + 3488 ) = 0.046
+              for Hillary Clinton and Donald Trump, the similarity ratio would be 1 / (770 + 45 ) = 0.00122
+              
+
 
 
 
@@ -24,7 +29,7 @@ information.
 
 
 
-
+The user followed by both Hillary Clinton and Donald Trump is the WhiteHouse. WhiteHouse office is the official residence and work place of the President of the United States. Both Hillary and Trump were presidential candidates for 2016 , and have followed White House since it serves both their common interests.
 
 
 
@@ -38,6 +43,11 @@ information.
 Johnson follows over 3K accounts, while Donald Trump follows less than
 50). Why do you think this is? How might that affect our analysis?
 
+ If we leaf through the accounts followed by Donald trump ( it is easy to do so manually since it is less than 50) , we could find that Donald trump is following mostly his close family, friends in journalism and his own establishments. In the mean time, Gray Johnson appears to follow people from all walks of life through his twitter. Hence it could be surmised that Donald trump uses twitter mostly to communicate with his friends than to follow up with his friends ( 36.9k tweets), while Gary Johnson uses the twitter to communicate and receive updates from his followers. 
+ 
+ This could be also found in the frequent word counts in recent tweets by both the candidates. The word "rt" for retweet is occuring mostly in Gary Johnson's posts than Donald trump, showing that he is following and retweeting his friend's tweets. (Analysis provided in a0solutions notebook)
+ 
+ This apparent disparity in numbers between the candidates could lead  to erroneous conclusions regarding the comparison analysis between the candidates , especially in terms of understanding their common and unique interests. ( Even though the very lack of number of people followed by Trump leads to certain conclusions regarding his personality - which could be his disinterest towards various topics and his conflicting ideas with journalism , science and media ) 
 
 
 
@@ -54,3 +64,9 @@ https://dev.twitter.com/rest/reference/get/friends/ids, how many requests will
 we have to make? Given how Twitter does rate limiting
 (https://dev.twitter.com/rest/public/rate-limiting), approximately how many
 minutes will it take to collect this data?
+
+Donal Trump follows 45 people in his twitter account . In a 15 minute window , twitter allows to fetch friend ids for 15 people. so to get the friend ids of all 45 people , it would take
+
+total number of time windows required = 45 / 15 = 3 windows = 45 minutes. Actually it would be less than 45 minutes , since you would be able to access the final 15 friend ids in less than 15 minutes in that particular window. So if we allow 1 second for fetching friend ids for one friend, then total time for getting final list of 15 friends = 15 seconds. Addinga buffer of 5 more seconds,
+
+total time = 30 minutes + ( 20 seconds ) . Hence the total time would be within 31 minutes.
