@@ -45,7 +45,39 @@ Johnson follows over 3K accounts, while Donald Trump follows less than
 
  If we leaf through the accounts followed by Donald trump ( it is easy to do so manually since it is less than 50) , we could find that Donald trump is following mostly his close family, friends in journalism and his own establishments. In the mean time, Gray Johnson appears to follow people from all walks of life through his twitter. Hence it could be surmised that Donald trump uses twitter mostly to communicate with his friends than to follow up with his friends ( 36.9k tweets), while Gary Johnson uses the twitter to communicate and receive updates from his followers. 
  
- This could be also found in the frequent word counts in recent tweets by both the candidates. The word "rt" for retweet is occuring mostly in Gary Johnson's posts than Donald trump, showing that he is following and retweeting his friend's tweets. (Analysis provided in a0solutions notebook)
+ This could be also found in the frequent word counts in recent tweets by both the candidates. The word "rt" for retweet is occuring mostly in Gary Johnson's posts than Donald trump, showing that he is following and retweeting his friend's tweets. (Analysis details provided below)
+ 
+ Donald Trumps tweets
+ 
+ found 1624 unique terms in 200 tweets
+Out[117]:
+[('the', 189),
+ ('to', 108),
+ ('of', 88),
+ ('and', 78),
+ ('a', 60),
+ ('in', 49),
+ ('is', 48),
+ ('for', 48),
+ ('our', 45),
+ ('are', 42)]
+ 
+ 
+ Gary Johnson's tweets
+ 
+ found 1169 unique terms in 199 tweets
+Out[119]:
+[('in', 65),
+ ('the', 63),
+ ('rt', 53),
+ ('#johnsonweld', 53),
+ ('to', 50),
+ ('for', 46),
+ ('#youin?', 33),
+ ('join', 30),
+ ('a', 29),
+ ('details-', 28)]
+ 
  
  This apparent disparity in numbers between the candidates could lead  to erroneous conclusions regarding the comparison analysis between the candidates , especially in terms of understanding their common and unique interests. ( Even though the very lack of number of people followed by Trump leads to certain conclusions regarding his personality - which could be his disinterest towards various topics and his conflicting ideas with journalism , science and media ) 
 
