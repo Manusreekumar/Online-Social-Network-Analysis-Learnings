@@ -332,7 +332,6 @@ def main():
     draw_network(graph, users, 'network.png')
     print('network drawn to network.png')
 
-
 if __name__ == '__main__':
     main()
 
