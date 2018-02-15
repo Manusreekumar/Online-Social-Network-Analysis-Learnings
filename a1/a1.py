@@ -269,7 +269,7 @@ def partition_girvan_newman(graph, max_depth):
     ['D', 'E', 'F', 'G']
     """
     ###TODO
-    my_graph = copy.deepcopy(graph)
+    my_graph = graph.copy()
     components = [c for c in nx.connected_component_subgraphs(my_graph)]
     while len(components) == 1:
         remove_edge, betweeness = sorted(approximate_betweenness(my_graph, max_depth).items(), key = lambda x : -x[1])[0]
@@ -429,7 +429,7 @@ def make_training_graph(graph, test_node, n):
     ['F', 'G']
     """
     ###TODO
-    new_graph = copy.deepcopy(graph)
+    new_graph = graph.copy()
     for i in range(n):
          
         node = sorted(new_graph.neighbors(test_node))[0]
