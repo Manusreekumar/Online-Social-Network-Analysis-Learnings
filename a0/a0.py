@@ -275,7 +275,7 @@ def create_graph(users, friend_counts):
             if friend_counts[y] > 1:
                 graph.add_node(y)
                 graph.add_edge(y, x['screen_name'] )
-    %matplotlib inline
+    #%matplotlib inline
     nx.draw(graph,  with_labels=True)
     return graph
     
