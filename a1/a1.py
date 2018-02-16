@@ -76,7 +76,7 @@ def bfs(graph, root, max_depth):
     seen = set()
 
     node2distances = {}
-    node2num_paths = {}
+    node2num_paths = defaultdict(int)
     node2parents = defaultdict(list)
     levelcount = 0
     neighbourcount = 0
@@ -93,6 +93,7 @@ def bfs(graph, root, max_depth):
             
         
         for nn in graph.neighbors(n):
+            
             if nn not in seen:
                 q.append(nn)
                 
@@ -102,7 +103,7 @@ def bfs(graph, root, max_depth):
                     node2distances[nn] = node2distances[n] + 1
             if ((node2distances[nn] > node2distances[n]) and (n not in node2parents[nn])) :
                 node2parents[nn].append(n)
-                node2num_paths[nn] = len(node2parents[nn])
+                node2num_paths[nn] += node2num_paths[n]
         if len(q) > 0:
             levelcount = node2distances[q[0]]
     return node2distances ,node2num_paths, node2parents
@@ -444,10 +445,11 @@ def make_training_graph(graph, test_node, n):
     """
     ###TODO
     new_graph = graph.copy()
+    node = sorted(new_graph.neighbors(test_node))
     for i in range(n):
          
-        node = sorted(new_graph.neighbors(test_node))[0]
-        remove_edge = (test_node, node)
+        
+        remove_edge = (test_node, node[i])
 
         #if remove_edge not in new_graph.edges():
          #   print("flg")
@@ -549,19 +551,28 @@ def path_score(graph, root, k, beta):
     count = 0
     final_list = []
     node2distances , node2num_paths, node2parents = bfs(graph, root,5) 
-    for node in sorted(node2distances.items(), reverse = True):
+    print(node2num_paths['(RED)'])
+    print(node2num_paths['Bill & Melinda Gates Foundation'])
+    
+    distances = sorted(node2distances.items(), key = lambda kv : (kv[1], kv[0]))
+    
+   
+    for node in distances:
         if node[0] is not root:
             if ( root, node[0]) not in graph.edges():
                 count = count + 1
-                final_list.append(((root, node[0]), beta**node[1] * node2num_paths[node[0]]))
-        if count == k:
-            break
+                final_list.append(((root, node[0]), (beta**node[1]) * node2num_paths[node[0]]))
+        #if count == k:
+        #    break
+    #for  i in final_list:
+    #    if i[0] == ('Bill Gates', 'Global Citizen'):
+    #        print("The score i am looing for is ", i[1])
     final_list.sort(key = lambda x:x[0][1])
-    final_list.sort(key = lambda x:x[0][0])
+    #final_list.sort(key = lambda x:x[0][0])
     final_list.sort(key = lambda x:x[1], reverse = True)
     
     
-    return(final_list)
+    return(final_list[:5])
 
 def evaluate(predicted_edges, graph):
     """
