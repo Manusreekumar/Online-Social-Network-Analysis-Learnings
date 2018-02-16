@@ -271,10 +271,15 @@ def partition_girvan_newman(graph, max_depth):
     ###TODO
     my_graph = graph.copy()
     components = [c for c in nx.connected_component_subgraphs(my_graph)]
+    final_score = sorted(approximate_betweenness(my_graph, max_depth).items(), key = lambda x : -x[1])
+    i = 0
     while len(components) == 1:
-        remove_edge, betweeness = sorted(approximate_betweenness(my_graph, max_depth).items(), key = lambda x : -x[1])[0]
+        
+        remove_edge = final_score[i][0]
         my_graph.remove_edge(*remove_edge)
         components = [c for c in nx.connected_component_subgraphs(my_graph)]
+        i = i + 1
+    
     return(components)
 
 def get_subgraph(graph, min_degree):
@@ -327,6 +332,7 @@ def volume(nodes, graph):
             if keyval not in seen:
                 seen[keyval] = "True"
                 vol  = vol + 1
+    #print(vol)
     return(vol)
     
 
@@ -347,9 +353,15 @@ def cut(S, T, graph):
     """
     ###TODO
     count = 0
-    for edge in graph.edges():
-        if edge[0] in S and edge[1] in T:
-            count = count + 1
+    for edge1 in S:
+        for edge2 in T:
+            if (edge1,edge2) in graph.edges():
+                count = count + 1
+    #for edge in graph.edges():
+    #    if edge[0] in S and edge[1] in T:
+            
+    #        count = count + 1
+    #print(count)
     return (count)
 
 def norm_cut(S, T, graph):
@@ -364,6 +376,7 @@ def norm_cut(S, T, graph):
 
     """
     ###TODO
+    
     return ((cut(S,T,graph) / volume(S,graph)) + (cut(S,T,graph) / volume(T,graph)))
 
 def score_max_depths(graph, max_depths):
@@ -386,10 +399,11 @@ def score_max_depths(graph, max_depths):
     ###TODO
     outval = []
     for depth in max_depths:
+        
         components = partition_girvan_newman(graph, depth)
         S = components[0].nodes()
         T = components[1].nodes()
-        
+        #print(len(S), len(T))
         
         outval.append((depth, norm_cut(S, T, graph)))
     return outval
