@@ -17,7 +17,7 @@ import copy
 import math
 import networkx as nx
 import urllib.request
-%matplotlib inline
+
 
 ## Community Detection
 
@@ -573,7 +573,7 @@ def evaluate(predicted_edges, graph):
         if edge in graph.edges():
             count = count + 1
     return(count / len(predicted_edges))
-    pass
+    
 
 """
 Next, we'll download a real dataset to see how our algorithm performs.
