@@ -1,0 +1,16 @@
+Grade: 0.00/50.00
+
+1 Deduction(s):
+
+--------------
+#1: 50.00 points
+Failing test: cannot import a1/a1.py
+  File "students/Manusreekumar/a1/a1.py", line 20
+
+    %matplotlib inline
+
+    ^
+
+SyntaxError: invalid syntax
+--------------
+
