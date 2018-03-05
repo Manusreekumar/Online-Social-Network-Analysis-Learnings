@@ -1,16 +1,107 @@
-Grade: 0.00/50.00
+Grade: 42.00/50.00
 
-1 Deduction(s):
+5 Deduction(s):
 
 --------------
-#1: 50.00 points
-Failing test: cannot import a1/a1.py
-  File "students/Manusreekumar/a1/a1.py", line 20
+#1: 1.00 points
+Failing test: test_complexity_3: 
+        @points=1
+        
+Traceback (most recent call last):
+  File "../assignments-sol/a1/a1_test.py", line 144, in test_complexity_3
+    self.assertTrue(round(y / x, 0) != 9, 'not multiplicative')
+AssertionError: False is not true : not multiplicative
 
-    %matplotlib inline
+source:
+    def test_complexity_3(self):
+         """
+         @points=1
+         """
+         x = complexity_of_bfs(2000, 500, 10)
+         y = complexity_of_bfs(6000, 1500, 10)
+         self.assertTrue(round(y / x, 0) != 9, 'not multiplicative')
+--------------
 
-    ^
+--------------
+#2: 1.00 points
+Failing test: test_complexity_4: 
+        @points=1
+        
+Traceback (most recent call last):
+  File "../assignments-sol/a1/a1_test.py", line 155, in test_complexity_4
+    self.assertEqual(round(y - x, 0), 4000, 'additive')
+AssertionError: 2000000 != 4000 : additive
 
-SyntaxError: invalid syntax
+source:
+    def test_complexity_4(self):
+         """
+         @points=1
+         """
+         x = complexity_of_bfs(2000, 500, 10)
+         y = complexity_of_bfs(6000, 500, 10)
+         self.assertEqual(round(y - x, 0), 4000, 'additive')
+         x = complexity_of_bfs(2000, 500, 10)
+         y = complexity_of_bfs(2000, 1500, 10)
+         self.assertEqual(round(y - x, 0), 1000, 'additive')
+--------------
+
+--------------
+#3: 2.00 points
+Failing test: test_brute_force_norm_cut1: 
+        @points=2
+        
+Traceback (most recent call last):
+  File "../assignments-sol/a1/a1_test.py", line 197, in test_brute_force_norm_cut1
+    r = brute_force_norm_cut(example_graph(), 1)
+NameError: name 'brute_force_norm_cut' is not defined
+
+source:
+    def test_brute_force_norm_cut1(self):
+         """
+         @points=2
+         """
+         r = brute_force_norm_cut(example_graph(), 1)
+         self.assertEqual(len(r), 1)
+         self.assertEqual(r, [(0.41666666666666663, [('B', 'D')])])
+--------------
+
+--------------
+#4: 2.00 points
+Failing test: test_brute_force_norm_cut2: 
+        @points=2
+        
+Traceback (most recent call last):
+  File "../assignments-sol/a1/a1_test.py", line 205, in test_brute_force_norm_cut2
+    r = brute_force_norm_cut(example_graph(), 2)
+NameError: name 'brute_force_norm_cut' is not defined
+
+source:
+    def test_brute_force_norm_cut2(self):
+         """
+         @points=2
+         """
+         r = brute_force_norm_cut(example_graph(), 2)
+         self.assertEqual(len(r), 14)
+         self.assertEqual(sorted(r)[0], (0.41666666666666663, [('A', 'B'), ('B', 'D')]))
+--------------
+
+--------------
+#5: 2.00 points
+Failing test: test_brute_force_norm_cut3: 
+        @points=2
+        
+Traceback (most recent call last):
+  File "../assignments-sol/a1/a1_test.py", line 214, in test_brute_force_norm_cut3
+    r = brute_force_norm_cut(example_graph(), 3)
+NameError: name 'brute_force_norm_cut' is not defined
+
+source:
+    def test_brute_force_norm_cut3(self):
+         """
+         @points=2
+         """
+         r = brute_force_norm_cut(example_graph(), 3)
+         self.assertEqual(len(r), 68)
+         self.assertEqual(sorted(r)[-1], (1.3333333333333333, [('D', 'F'), ('E', 'F'), ('F', 'G')]))
 --------------
 
