@@ -30,7 +30,7 @@ import numpy as np
 import os
 import re
 from scipy.sparse import csr_matrix
-from sklearn.cross_validation import KFold
+from sklearn.model_selection import KFold
 from sklearn.linear_model import LogisticRegression
 import string
 import tarfile
@@ -94,7 +94,13 @@ def tokenize(doc, keep_internal_punct=False):
           dtype='<U5')
     """
     ###TODO
-    pass
+    if (keep_internal_punct):
+        return re.sub('\W+\B', ' ', doc).lower().split() if doc else []
+        
+      
+    else:
+        return re.sub('\W+', ' ', doc).lower().split() if doc else []
+
 
 
 def token_features(tokens, feats):
@@ -116,7 +122,10 @@ def token_features(tokens, feats):
     [('token=hi', 2), ('token=there', 1)]
     """
     ###TODO
-    pass
+    for token in tokens:
+        key = 'token=' + token
+        feats[key] += 1
+    return feats
 
 
 def token_pair_features(tokens, feats, k=3):
@@ -146,7 +155,18 @@ def token_pair_features(tokens, feats, k=3):
     [('token_pair=a__b', 1), ('token_pair=a__c', 1), ('token_pair=b__c', 2), ('token_pair=b__d', 1), ('token_pair=c__d', 1)]
     """
     ###TODO
-    pass
+    
+    for window_start in range(int(len(tokens)/k) + 1):
+        token_append = tokens[window_start]
+        for i in range(window_start+1, (window_start + k)):
+            token_append += tokens[i]
+        for j in combinations(token_append, 2):
+            key = 'token_pair=' + j[0] + "_" + j[1] 
+            feats[key] += 1
+    return feats
+        
+        
+
 
 
 neg_words = set(['bad', 'hate', 'horrible', 'worst', 'boring'])
@@ -172,7 +192,15 @@ def lexicon_features(tokens, feats):
     [('neg_words', 1), ('pos_words', 2)]
     """
     ###TODO
-    pass
+    feats['neg_words'] = 0
+    feats['pos_words'] = 0
+    for token in tokens:
+        if token.lower() in neg_words:
+            feats['neg_words'] += 1
+        elif token.lower() in pos_words:
+            feats['pos_words'] += 1
+    return feats
+
 
 
 def featurize(tokens, feature_fns):
@@ -192,7 +220,14 @@ def featurize(tokens, feature_fns):
     [('neg_words', 0), ('pos_words', 2), ('token=LOVE', 1), ('token=great', 1), ('token=i', 1), ('token=movie', 1), ('token=this', 1)]
     """
     ###TODO
-    pass
+    
+    func_feats = defaultdict(lambda: 0)
+    for function in feature_fns:
+     
+        function(tokens, func_feats)
+    return sorted(func_feats.items())
+        
+       
 
 
 def vectorize(tokens_list, feature_fns, min_freq, vocab=None):
@@ -228,7 +263,85 @@ def vectorize(tokens_list, feature_fns, min_freq, vocab=None):
     [('token=great', 0), ('token=horrible', 1), ('token=isn', 2), ('token=movie', 3), ('token=t', 4), ('token=this', 5)]
     """
     ###TODO
-    pass
+    feats = defaultdict(lambda: 0)
+    check = defaultdict(lambda: 0)
+    vocab = {}
+    row = []
+    col = []
+    data = []
+    cols = []
+    tokens = []
+    #Creating features
+    for doc_tokens in tokens_list:
+        #for function in feature_fns:
+        #    function(doc_tokens, feats)
+    #Creating Vocabulary
+        tokens = tokens + doc_tokens
+    
+    cols =  featurize(tokens, feature_fns)
+    
+    for i in range(len(cols)):
+        vocab[cols[i][0]] = i
+    
+    #Creating CSR
+    for row_index in range(len(tokens_list)):
+    #For each token list of features, the value is checked with corresponding feature
+        for word in tokens_list[row_index]:
+    
+            col_index = vocab['token=' + word]
+            #Check dictionary is used to understand whether the value is already encoded
+            if check[(row_index, col_index)] != 0 :
+                data[check[(row_index,col_index)]] += 1
+            else:
+
+                row.append(row_index)
+                col.append(col_index)
+                data.append(1)
+                #else check is updated with row,col pair and value is the position in the row
+                check[(row_index, col_index)] = len(row) -1
+     #checking the minimum frequency
+    col_counter = Counter(col)
+    for col_value in col_counter :
+        if col_counter[col_value] < min_freq:
+            i = 0
+            while(i < len(col)):
+                if col[i] == col_value:
+                    
+                    col.remove(col[i])
+                    row.remove(row[i])
+                    data.remove(data[i])
+                i = i + 1
+    '''
+    for col_index in col:
+        freq_count = 0
+        for row_index in range(len(tokens_list)):
+            if check[(row_index,col_index)] != 0:
+                freq_count = freq_count + 1
+        if freq_count < min_freq:
+            i = 0
+            while(i < len(col)):
+                if col[i] == col_index:
+                    check[(col[i], row[i])] = 0
+                    col.remove(col[i])
+                    row.remove(row[i])
+                    data.remove(data[i])
+                i = i + 1
+    
+
+    '''
+    
+    '''
+    for row_index in range(len(tokens_list)):
+        if check[(row_index,col_index)] != 0:
+            row.remove(row[check[(row_index,col_index)]])
+            col.remove(col[check[(row_index,col_index)]])
+            data.remove(data[check[(row_index,col_index)]])
+            check[(row_index,col_index)] = 0
+
+    '''        
+                
+    
+    return csr_matrix((data, (row, col)), shape=(len(tokens_list), len(vocab)), dtype=np.int64), vocab
 
 
 def accuracy_score(truth, predicted):
@@ -239,7 +352,6 @@ def accuracy_score(truth, predicted):
       predicted...array of predicted labels (0 or 1)
     """
     return len(np.where(truth==predicted)[0]) / len(truth)
-
 
 def cross_validation_accuracy(clf, X, labels, k):
     """
@@ -257,8 +369,17 @@ def cross_validation_accuracy(clf, X, labels, k):
       The average testing accuracy of the classifier
       over each fold of cross-validation.
     """
-    ###TODO
-    pass
+
+    cv = KFold(n_splits=k)
+    accuracies = []
+    for train_idx, test_idx in cv.split(X):
+        
+        clf.fit(X[train_idx], labels[train_idx])
+        predicted = clf.predict(X[test_idx])
+        acc = accuracy_score(labels[test_idx], predicted)
+        accuracies.append(acc)
+    avg = np.mean(accuracies)
+    return avg
 
 
 def eval_all_combinations(docs, labels, punct_vals,
@@ -299,8 +420,36 @@ def eval_all_combinations(docs, labels, punct_vals,
 
       This function will take a bit longer to run (~20s for me).
     """
-    ###TODO
-    pass
+    token_list = []
+    accuracy_dict = {}
+    final_list = []
+    clf = LogisticRegression()
+    #for each punctuation
+    for punc in punct_vals:
+        #for each document
+        tokens_list = [tokenize(d) for d in docs]
+        
+        #for d in docs:
+         #   token_list.append(tokenize(d, keep_internal_punct=punc))
+    #for every possible combination
+        for i in range(1 , (len(feature_fns)+1)):
+            #for each combination of feature function
+            for feat_comb in combinations(feature_fns,i):
+                print(feat_comb)
+                #for each value of min freq
+                for freq in min_freqs:
+                    #vectorize for this combination
+                    X,vocab = vectorize(tokens_list, feat_comb, freq,vocab=None)
+                    #calculate accuracy
+                    accuracy = cross_validation_accuracy(clf, X, labels, 5)
+                    #assign dictionary values
+                    accuracy_dict['features'] = feat_comb
+                    accuracy_dict['punct'] = punc
+                    accuracy_dict['min_freq'] = freq
+                    accuracy_dict['accuracy'] = accuracy
+                    final_list.append(accuracy_dict)
+    return final_list
+
 
 
 def plot_sorted_accuracies(results):
