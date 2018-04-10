@@ -1,15 +1,3 @@
-# coding: utf-8
-
-# # Assignment 3:  Recommendation systems
-#
-# Here we'll implement a content-based recommendation algorithm.
-# It will use the list of genres for a movie as the content.
-# The data come from the MovieLens project: http://grouplens.org/datasets/movielens/
-# Note that I have not provided many doctests for this one. I strongly
-# recommend that you write your own for each function to ensure your
-# implementation is correct.
-
-# Please only use these imports.
 from collections import Counter, defaultdict
 import math
 import numpy as np
@@ -36,6 +24,7 @@ def tokenize_string(my_string):
     return re.findall('[\w\-]+', my_string.lower())
 
 
+
 def tokenize(movies):
     """
     Append a new column to the movies DataFrame with header 'tokens'.
@@ -55,7 +44,8 @@ def tokenize(movies):
     [['horror', 'romance'], ['sci-fi']]
     """
     ###TODO
-    pass
+    movies['tokens'] = movies['genres'].apply(lambda x: tokenize_string(x))
+    return movies
 
 
 def featurize(movies):
@@ -81,7 +71,38 @@ def featurize(movies):
       - The vocab, a dict from term to int. Make sure the vocab is sorted alphabetically as in a2 (e.g., {'aardvark': 0, 'boy': 1, ...})
     """
     ###TODO
-    pass
+    
+    vocab = defaultdict(lambda:len(vocab))
+    tokens_list = []
+    #Created the vocabulary
+    for tokens in movies['tokens']:
+        tokens_list += tokens
+    for tokens in sorted(tokens_list):
+        vocab[tokens]
+    N = len(movies)
+    df = defaultdict(int)
+    #We need to create a dictionary for each term with frequency
+    for term in vocab.keys():
+        for tokens in movies['tokens']:
+            if term in tokens:
+                df[term] += 1
+    #freq of term i in document d
+    tf = defaultdict(lambda:Counter())
+    for i, tokens in enumerate(movies['tokens']):
+        tf[i].update(tokens)
+    
+    features = []
+    for i, tokens in enumerate(movies['tokens']):
+        feature_array = np.zeros(shape = (1, len(vocab)))
+        for token in tokens:
+            #print(token)
+            feature_array[0, vocab[token]] = tf[i][token] / tf[i].most_common(1)[0][1] * math.log10(N / df[token])
+        features.append(csr_matrix(feature_array))
+    movies['features'] = features
+    return movies , vocab
+        
+    
+        
 
 
 def train_test_split(ratings):
@@ -92,7 +113,6 @@ def train_test_split(ratings):
     train = sorted(set(range(len(ratings))) - test)
     test = sorted(test)
     return ratings.iloc[train], ratings.iloc[test]
-
 
 def cosine_sim(a, b):
     """
@@ -106,8 +126,8 @@ def cosine_sim(a, b):
       where ||a|| indicates the Euclidean norm (aka L2 norm) of vector a.
     """
     ###TODO
-    pass
-
+    cosine_val = np.dot(a,b.T) / (np.sqrt(a.multiply(a).sum(1)) * np.sqrt(b.multiply(b).sum(1)))
+    return float(cosine_val[0 , 0])
 
 def make_predictions(movies, ratings_train, ratings_test):
     """
@@ -132,8 +152,31 @@ def make_predictions(movies, ratings_train, ratings_test):
       A numpy array containing one predicted rating for each element of ratings_test.
     """
     ###TODO
-    pass
-
+    movie_similarity = defaultdict(list)
+    pred_ratings = []
+    for index_test, test_row in ratings_test.iterrows():
+        weighted_avg = 0
+        corr_sum = 0
+        ratings_sum = 0
+        feature_movie_to_rate = movies.loc[movies.movieId == test_row.movieId, 'features'].iloc[0]
+        for index_train, train_row in ratings_train[ratings_train.userId==test_row.userId].iterrows():
+            
+            ratings_sum += train_row.rating
+            train_movie = movies.loc[movies.movieId == train_row.movieId, 'features'].iloc[0]
+            if cosine_sim (feature_movie_to_rate, train_movie) > 0:
+                corr_sum += cosine_sim (feature_movie_to_rate, train_movie)
+                weighted_avg += (cosine_sim (feature_movie_to_rate, train_movie) * train_row.rating)
+            
+                #print(cosine_sim (feature_movie_to_rate, train_movie))
+                #print(train_row.rating)
+                #print(weighted_avg)
+        if corr_sum != 0:
+            weighted_avg = round((weighted_avg / corr_sum), 1)
+        else:
+            weighted_avg = round((ratings_sum / len(ratings_train[ratings_train.userId==test_row.userId])), 1)
+ 
+        pred_ratings = np.append(pred_ratings, weighted_avg)
+    return pred_ratings
 
 def mean_absolute_error(predictions, ratings_test):
     """DONE.
