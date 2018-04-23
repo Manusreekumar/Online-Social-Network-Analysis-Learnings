@@ -1,0 +1,51 @@
+Grade: 46.00/50.00
+
+1 Deduction(s):
+
+--------------
+#1: 4.00 points
+Failing test: test_token_pair_features: 
+        @points=4
+        
+Traceback (most recent call last):
+  File "../assignments-sol/a2/a2_test.py", line 49, in test_token_pair_features
+    [('token_pair=a__b', 1), ('token_pair=a__c', 1), ('token_pair=b__c', 2), ('token_pair=b__d', 1), ('token_pair=c__d', 1)])
+AssertionError: Lists differ: [('to[52 chars]pair=b__c', 2), ('token_pair=b__d', 1), ('token_pair=c__d', 2)] != [('to[52 chars]pair=b__c', 2), ('token_pair=b__d', 1), ('token_pair=c__d', 1)]
+
+First differing element 4:
+('token_pair=c__d', 2)
+('token_pair=c__d', 1)
+
+  [('token_pair=a__b', 1),
+   ('token_pair=a__c', 1),
+   ('token_pair=b__c', 2),
+   ('token_pair=b__d', 1),
+-  ('token_pair=c__d', 2)]
+?                      ^
+
++  ('token_pair=c__d', 1)]
+?                      ^
+
+
+source:
+    def test_token_pair_features(self):
+         """
+         @points=4
+         """
+         feats = defaultdict(lambda: 0)
+         token_pair_features(np.array(['a', 'b', 'c', 'd']), feats)
+         ret = sorted(feats.items())
+         # switch x_y to x__y if necessary.
+         ret = [(re.sub(r'=([a-z]+)_([a-z]+)', r'=\1__\2', r), v) for r, v in ret]
+         self.assertListEqual(ret,
+                              [('token_pair=a__b', 1), ('token_pair=a__c', 1), ('token_pair=b__c', 2), ('token_pair=b__d', 1), ('token_pair=c__d', 1)])
+ 
+         feats = defaultdict(lambda: 0)
+         token_pair_features(np.array(['a', 'b', 'c', 'd', 'e']), feats, k=4)
+         ret = sorted(feats.items())
+         # switch x_y to x__y if necessary.
+         ret = [(re.sub(r'=([a-z]+)_([a-z]+)', r'=\1__\2', r), v) for r, v in ret]
+         self.assertListEqual(ret,
+                              [('token_pair=a__b', 1), ('token_pair=a__c', 1), ('token_pair=a__d', 1), ('token_pair=b__c', 2), ('token_pair=b__d', 2), ('token_pair=b__e', 1), ('token_pair=c__d', 2), ('token_pair=c__e', 1), ('token_pair=d__e', 1)])
+--------------
+
