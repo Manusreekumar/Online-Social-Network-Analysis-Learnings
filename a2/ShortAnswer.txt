@@ -1,0 +1,18 @@
+1. Looking at the top errors printed by get_top_misclassified, name two ways you would modify your classifier to improve accuracy (it could be features, tokenization, or something else.)
+
+
+Looking at the top misclassified document, we could understand that the negative reviews that were tagged as positive is due to the fact that the token pair features and postive / negative words that had more weightage in majority of the documents for classification failed in these particular cases. Couple of ways that i could think about improving the classifier accuracy are :
+
+a. Using feature selection method prior to classification method like Linear Support vector machine using L1 or L2 penalty, for correctly identifying the features that could classify the reviews better
+
+b. Using TF-IDF vectorizer for penalizing the features that appear in many documents so that only strong features gets applied to the model
+
+c. Using SelectKBest that uses Chisquare test to identify the most important features in classifying the documents.
+
+d. Using NLTK package or AFINN to get positive and negative words repository to improve the lexicon features.
+
+e. Adjusting the value of 'k' - the size of window in token pair features function
+
+2. Implement one of the above methods. How did it affect the result ?
+
+I have implemented both TF-IDF vectorizer ( used the sk learn package since the formula i wrote is not boosting the expected accuracy for some reason) and lexicon features with afinn repo to improve lexicon features function. But the methods have not improved the final accuracy , which is 78 percent. Finally, when the value of k is made '2' in the token pair features function, the accuracy improved to 80.

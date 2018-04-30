@@ -35,7 +35,10 @@ from sklearn.linear_model import LogisticRegression
 import string
 import tarfile
 import urllib.request
-
+from sklearn.feature_selection import SelectFromModel
+from sklearn.svm import LinearSVC
+from sklearn.pipeline import Pipeline
+from sklearn.naive_bayes import MultinomialNB
 
 def download_data():
     """ Download and unzip data.
@@ -126,7 +129,7 @@ def token_features(tokens, feats):
     return feats
 
 
-def token_pair_features(tokens, feats, k=3):
+def token_pair_features(tokens, feats, k=2):
     """
     Compute features indicating that two words occur near
     each other within a window of size k.
@@ -166,9 +169,10 @@ def token_pair_features(tokens, feats, k=3):
      
 
 
-
+#neg_words = set(['bad', 'hate', 'horrible', 'worst', 'boring', 'annoying', 'failed', 'miserably'])
 neg_words = set(['bad', 'hate', 'horrible', 'worst', 'boring'])
 pos_words = set(['awesome', 'amazing', 'best', 'good', 'great', 'love', 'wonderful'])
+
 
 def lexicon_features(tokens, feats):
     """
@@ -624,6 +628,43 @@ def print_top_misclassified(test_docs, test_labels, X_test, clf, n):
         print("truth="+str(output[i][0])+" "+ "predicted=" + str(output[i][1])+ " "+"proba="+str(output[i][2]))
         print(output[i][3])
     
+from sklearn.feature_extraction.text import TfidfTransformer
+
+#Additional implementation to improve accuracy
+def TF_IDF_vectorize_V2(tokens_list, feature_fns, min_freq=0, vocab=None):
+    
+    X, vocab = vectorize(tokens_list, feature_fns, min_freq, vocab)
+    tfidf_transformer = TfidfTransformer(use_idf = True, sublinear_tf = True)
+    X_train_tfidf = tfidf_transformer.fit_transform(X)
+    #vocab = np.array(tfidf_transformer.get_feature_names())
+    return(X_train_tfidf, vocab)
+
+from io import BytesIO
+from zipfile import ZipFile
+from urllib.request import urlopen
+
+url = urlopen('http://www2.compute.dtu.dk/~faan/data/AFINN.zip')
+zipfile = ZipFile(BytesIO(url.read()))
+afinn_file = zipfile.open('AFINN/AFINN-111.txt')
+
+afinn = dict()
+
+for line in afinn_file:
+    parts = line.strip().split()
+    if len(parts) == 2:
+        afinn[parts[0].decode("utf-8")] = int(parts[1])
+
+def lexicon_features_afinn(tokens, feats):
+    
+    feats['neg_words'] = 0
+    feats['pos_words'] = 0
+    for token in tokens:
+        if token.lower() in afinn:
+            if afinn[token.lower()] < 0 :
+                feats['neg_words'] += 1
+            elif afinn[token.lower()] > 0:
+                feats['pos_words'] += 1
+    return feats
 
 def main():
     """
@@ -636,6 +677,7 @@ def main():
     docs, labels = read_data(os.path.join('data', 'train'))
     # Evaluate accuracy of many combinations
     # of tokenization/featurization.
+    
     results = eval_all_combinations(docs, labels,
                                     [True, False],
                                     feature_fns,
